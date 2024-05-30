@@ -1,6 +1,8 @@
+# main.py
+
 import pygame
 import sys
-from game import start_game 
+from game import start_game
 
 # Inicializar pygame
 pygame.init()
@@ -32,8 +34,8 @@ player1_name = ''
 player2_name = ''
 input_box1 = pygame.Rect(WIDTH // 2 - 100, 150, 200, 32)
 input_box2 = pygame.Rect(WIDTH // 2 - 100, 300, 200, 32)
-color_boxes1 = {color: pygame.Rect(WIDTH // 2 - 115 + i*50, 220, 32, 32) for i, color in enumerate(COLORS)}
-color_boxes2 = {color: pygame.Rect(WIDTH // 2 - 115 + i*50, 370, 32, 32) for i, color in enumerate(COLORS)}
+color_boxes1 = {color: pygame.Rect(WIDTH // 2 - 115 + i * 50, 220, 32, 32) for i, color in enumerate(COLORS)}
+color_boxes2 = {color: pygame.Rect(WIDTH // 2 - 115 + i * 50, 370, 32, 32) for i, color in enumerate(COLORS)}
 start_button = pygame.Rect(WIDTH // 2 - 150, 500, 300, 60)
 active1 = False
 active2 = False
