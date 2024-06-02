@@ -1,6 +1,3 @@
-#funciones de validacion de moviminetos, turnos y renderizado del estado de la partida en el tablero y el valor de 
-#la ficha en el tablero y sus contadores durante la partida 
-
 import pygame
 
 def navigate_and_select_piece(current_index, pieces):
@@ -10,5 +7,11 @@ def navigate_and_select_piece(current_index, pieces):
         current_index = (current_index - 1) % len(pieces)  # Seleccionar la pieza anterior
     elif keys[pygame.K_DOWN]:  # Si se presiona la tecla abajo
         current_index = (current_index + 1) % len(pieces)  # Seleccionar la pieza siguiente
+    elif keys[pygame.K_SPACE]:  # Si se presiona la tecla de espacio
+        # Lógica para validar y seleccionar la pieza
+        piece_name = list(pieces.keys())[current_index]
+        count, _ = pieces[piece_name]
+        if count > 0:
+            pieces[piece_name] = (count - 1, pieces[piece_name][1])  # Decrementar el contador de la pieza seleccionada
 
     return current_index

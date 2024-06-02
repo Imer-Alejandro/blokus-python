@@ -1,1 +1,1 @@
-start_game
+"blue": (0, 0, 255)

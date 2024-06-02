@@ -79,7 +79,6 @@ while running:
             if start_button.collidepoint(event.pos):
                 # Verificar que todos los campos están completos
                 if player1_name and player2_name and color_selected1 and color_selected2:
-                    print("Iniciar partida con los jugadores:")
                     # Llamar a la función para iniciar el juego
                     start_game(player1_name, color_selected1, player2_name, color_selected2)
                 else:
