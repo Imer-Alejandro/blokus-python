@@ -1,4 +1,5 @@
 import pygame
+
 import sys
 from movimientos import navigate_and_select_piece # Importar la función de game_module.py
 
@@ -10,6 +11,7 @@ WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
+GREEN = (0, 255, 0)
 LIGHT_BLUE = (57, 106, 238)
 COLORS = {
     "red": (255, 0, 0),
@@ -55,7 +57,7 @@ def draw_text(text, font, color, surface, x, y, center=True):
     surface.blit(text_obj, text_rect)
 
 # Función para mostrar las piezas de cada jugador debajo de este con sus contadores
-def draw_pieces(surface, pieces, x, y, color):
+def draw_pieces_norm(surface, pieces, x, y, color):
     piece_y = y
     margin = 10  # Margen entre piezas
     for piece_name, (count, cells) in pieces.items():
@@ -68,6 +70,23 @@ def draw_pieces(surface, pieces, x, y, color):
             pygame.draw.rect(surface, (255, 255, 255), cell_rect, 1)
         # Dibujar el número de piezas restantes
         draw_text(str(count), font, BLACK, surface, x + piece_width * 20 + 20, piece_y + 8, center=False)
+        piece_y += (max(cell[1] for cell in cells) + 1) * 25 + margin
+
+def draw_pieces(surface, pieces, x, y, color, current_index, selected):
+    piece_y = y
+    margin = 10  # Margen entre piezas
+    for i, (piece_name, (count, cells)) in enumerate(pieces.items()):
+        alpha = 100 if count > 0 else 255  # Opacidad para piezas seleccionables y no seleccionables
+        if i == current_index and selected:
+            alpha = 255  # Ajustar opacidad para la pieza seleccionada
+        for cell in cells:
+            cell_rect = pygame.Rect(x + cell[0] * 20, piece_y + cell[1] * 20, 20, 20)
+            pygame.draw.rect(surface, color, cell_rect)  # Dibujar la pieza
+            pygame.draw.rect(surface, (255, 255, 255), cell_rect, 1)  # Dibujar el borde
+            if i == current_index and selected:
+                pygame.draw.rect(surface, GREEN, cell_rect, 3)  # Dibujar el borde verde para la pieza seleccionada
+        # Dibujar el número de piezas restantes
+        draw_text(str(count), font, BLACK if count > 0 else GREEN, surface, x + 30, piece_y + 8, center=False)
         piece_y += (max(cell[1] for cell in cells) + 1) * 25 + margin
 
 def draw_pieces_with_opacity(surface, pieces, x, y, color, current_index, selected):
@@ -146,11 +165,16 @@ def start_game(player1_name, player1_color, player2_name, player2_color):
         draw_text(f"Turno de: {player1_name if current_turn == 'player1' else player2_name}", font, BLACK, screen, WIDTH // 2, 30)
 
         # Dibujar nombres de los jugadores
-        draw_text(player1_name, font, COLORS[player1_color], screen, 100, 150)
-        draw_text(player2_name, font, COLORS[player2_color], screen, 900, 150)
+        draw_text(player1_name, font, COLORS[player1_color], screen, 120, 140)
+        draw_text(player2_name, font, COLORS[player2_color], screen, 920, 140)
         
         # Dibujar piezas de los jugadores
-        draw_pieces(screen, player_pieces["player1"], 50, 200, COLORS[player1_color])
-        draw_pieces(screen, player_pieces["player2"], 850, 200, COLORS[player2_color])
+        if  current_turn == 'player1':
+            draw_pieces(screen, player_pieces["player1"], 50, 200, COLORS[player1_color],selected_piece_index,selected)
+            draw_pieces_norm(screen, player_pieces["player2"], 850, 200, COLORS[player2_color])
+        elif current_turn == 'player2':
+            draw_pieces(screen, player_pieces["player2"],  850, 200, COLORS[player2_color],selected_piece_index,selected)
+            draw_pieces_norm(screen, player_pieces["player1"],50, 200, COLORS[player1_color])
+
 
         pygame.display.flip()
