@@ -76,6 +76,9 @@ def draw_pieces(surface, pieces, x, y, color, current_index, selected):
     piece_y = y
     margin = 10  # Margen entre piezas
     for i, (piece_name, (count, cells)) in enumerate(pieces.items()):
+                # Calcular el ancho de la pieza
+        piece_width = max(cell[0] for cell in cells) + 1
+        
         alpha = 100 if count > 0 else 255  # Opacidad para piezas seleccionables y no seleccionables
         if i == current_index and selected:
             alpha = 255  # Ajustar opacidad para la pieza seleccionada
@@ -86,7 +89,7 @@ def draw_pieces(surface, pieces, x, y, color, current_index, selected):
             if i == current_index and selected:
                 pygame.draw.rect(surface, GREEN, cell_rect, 3)  # Dibujar el borde verde para la pieza seleccionada
         # Dibujar el número de piezas restantes
-        draw_text(str(count), font, BLACK if count > 0 else GREEN, surface, x + 30, piece_y + 8, center=False)
+        draw_text(str(count), font, BLACK, surface, x + piece_width * 20 + 20, piece_y + 8, center=False)
         piece_y += (max(cell[1] for cell in cells) + 1) * 25 + margin
 
 def draw_pieces_with_opacity(surface, pieces, x, y, color, current_index, selected):
