@@ -1,6 +1,7 @@
 import pygame
 import sys
-from movimientos import draw_selected_piece
+from movimientos import draw_selected_piece,place_piece,can_place_piece
+from game_module import draw_pieces,draw_board,draw_text
 
 # Inicializar pygame
 pygame.init()
@@ -55,54 +56,6 @@ player_pieces = {
     }
 }
 
-# Función para dibujar los textos en pantalla 
-def draw_text(text, font, color, surface, x, y, center=True):
-    text_obj = font.render(text, True, color)
-    if center:
-        text_rect = text_obj.get_rect(center=(x, y))
-    else:
-        text_rect = text_obj.get_rect(topleft=(x, y))
-    surface.blit(text_obj, text_rect)
-
-def draw_pieces(surface, pieces, x, y, color, current_index, move_selected_active):
-    piece_y = y
-    margin = 10
-    for i, (piece_name, (count, cells)) in enumerate(pieces.items()):
-        piece_width = max(cell[0] for cell in cells) + 1
-        
-        alpha = 100 if count > 0 else 255
-        if i == current_index and move_selected_active:
-            alpha = 255
-        for cell in cells:
-            cell_rect = pygame.Rect(x + cell[0] * 20, piece_y + cell[1] * 20, 20, 20)
-            pygame.draw.rect(surface, color, cell_rect)
-            pygame.draw.rect(surface, (255, 255, 255), cell_rect, 1)
-            if i == current_index and move_selected_active:
-                pygame.draw.rect(surface, (0, 255, 0), cell_rect, 3)
-        draw_text(str(count), font, BLACK, surface, x + piece_width * 20 + 20, piece_y + 8, center=False)
-        piece_y += (max(cell[1] for cell in cells) + 1) * 25 + margin
-
-def draw_board(screen, board_state, board_origin, cell_size):
-    for row in range(len(board_state)):
-        for col in range(len(board_state[row])):
-            rect = pygame.Rect(board_origin[0] + col * cell_size, board_origin[1] + row * cell_size, cell_size, cell_size)
-            pygame.draw.rect(screen, BLACK, rect, 1)
-            if board_state[row][col]:
-                pygame.draw.rect(screen, board_state[row][col], rect)
-
-def can_place_piece(board_state, piece, pos_x, pos_y, board_size):
-    for cell in piece:
-        x, y = cell[0] + pos_x, cell[1] + pos_y
-        if x < 0 or x >= board_size or y < 0 or y >= board_size:
-            return False
-        if board_state[y][x] is not None:
-            return False
-    return True
-
-def place_piece(board_state, piece, pos_x, pos_y, color):
-    for cell in piece:
-        x, y = cell[0] + pos_x, cell[1] + pos_y
-        board_state[y][x] = color
 
 def start_game(player1_name, player1_color, player2_name, player2_color):
     WIDTH, HEIGHT = 1000, 700
@@ -125,14 +78,18 @@ def start_game(player1_name, player1_color, player2_name, player2_color):
     running = True
     while running:
         screen.fill(WHITE)
+        #se dibuja el tablero en la pantalla 
         draw_board(screen, board_state, board_origin, cell_size)
         
+        #se activa el bucle que escucha los eventos
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
+            # se valida las teclas presionadas
             elif event.type == pygame.KEYDOWN:
+                #logica de selecion de pieza al presionar espacio
                 if event.key == pygame.K_SPACE:
                     if move_selected_active:
                         piece_name = list(player_pieces[current_turn].keys())[selected_piece_index]
@@ -143,7 +100,7 @@ def start_game(player1_name, player1_color, player2_name, player2_color):
                             move_selected_active = False
                     else:
                         move_selected_active = True
-
+                #logica de dibujo y validacion para fijar la pieza en el tablero al presionar enter 
                 elif event.key == pygame.K_RETURN and selected:
                     piece_name = list(player_pieces[current_turn].keys())[selected_piece_index]
                     piece = player_pieces[current_turn][piece_name][1]
@@ -153,7 +110,7 @@ def start_game(player1_name, player1_color, player2_name, player2_color):
                         selected = False
                         selected_piece_index = 0
                         move_selected_active = True
-
+                #logica para mover la pieza selecionada por el jugador dentro de los limites del tablero
                 elif event.key == pygame.K_UP:
                     if selected:
                         if piece_y > 0:
@@ -175,13 +132,14 @@ def start_game(player1_name, player1_color, player2_name, player2_color):
 
         pygame.time.Clock().tick(10)
 
+        #dibujo de menu y otros testo en la vista del huego
         draw_text("BLOKUS - Python", title_font, LIGHT_BLUE, screen, WIDTH // 2, 10)
-        
         draw_text(f"Turno de: {player1_name if current_turn == 'player1' else player2_name}", font, BLACK, screen, WIDTH // 2, 30)
        
         draw_text(player1_name, font, COLORS[player1_color], screen, 120, 140)
         draw_text(player2_name, font, COLORS[player2_color], screen, 920, 140)
 
+        #logica de dibujado para pasar el selector de fichas de un jugador a otro segun el que este en turno
         if current_turn == 'player1':
             draw_pieces(screen, player_pieces["player1"], 50, 200, COLORS[player1_color], selected_piece_index, move_selected_active)
             draw_pieces(screen, player_pieces["player2"], 850, 200, COLORS[player2_color], selected_piece_index, False)
@@ -189,6 +147,7 @@ def start_game(player1_name, player1_color, player2_name, player2_color):
             draw_pieces(screen, player_pieces["player2"], 850, 200, COLORS[player2_color], selected_piece_index, move_selected_active)
             draw_pieces(screen, player_pieces["player1"], 50, 200, COLORS[player1_color], selected_piece_index, False)
         
+        #logica para desactiva el selector de piezas luego que se selecione una 
         if selected:
             draw_selected_piece(screen, selected_piece_index, player_pieces[current_turn], piece_x, piece_y, cell_size, board_origin, COLORS[player1_color if current_turn == "player1" else player2_color])
 

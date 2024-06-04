@@ -20,6 +20,9 @@ COLORS = {
     "purple": (128, 0, 128)
 }
 
+# este modulo del juego se encarga de mostrar la interfaz, simulando elementos como imput de entradas de texto 
+# y chebox, para poder definir los nombres de los jugadores en cada partida y el color de sus piezas
+
 # Configuración de la pantalla
 WIDTH, HEIGHT = 1000, 700
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
